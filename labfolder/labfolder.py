@@ -201,7 +201,7 @@ class LabFolder(object):
         if r.status_code == 200:
             token = r.json()['token']
             headers = {'User-Agent': f'LabFolderApi; {username}',
-                       'Authorization': f'Token {token}'}
+                       'Authorization': f'Bearer {token}'}
             self.me = self._get_logged_user(headers=headers)
             self.me._headers = headers
             self.me._logged_in = True
