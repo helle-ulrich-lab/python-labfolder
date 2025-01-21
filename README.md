@@ -6,6 +6,10 @@ This is a basic implementation of the [LabFolder API v2](https://labfolder.labfo
 
 `git clone https://github.com/helle-ulrich-lab/python-labfolder`
 
+With conda
+
+`conda create -n labfolder_api python==3.11 requests # ipykernel, if you want to use the included Jupyter notebook`
+
 ## Usage
 
 ```python
