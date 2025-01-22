@@ -2,6 +2,8 @@ from getpass import getpass
 from requests import get as GET, post as POST, delete as DELETE, patch as PATCH
 from datetime import datetime
 from typing import Union
+from pathlib import Path
+from mimetypes import MimeTypes
 
 
 class LabFolderApiException(Exception):
@@ -490,5 +492,47 @@ class LabFolder(object):
                 f'Export successful for "{record}". '
                 "Check your account on the web to download the PDF."
             )
+        else:
+            raise LabFolderApiException(error=r.json())
+
+    def upload_file_to_entry(
+        self, entry_id: int, file_path: str, locked: bool = False
+    ) -> None:
+        """Upload a file to an entry."""
+
+        # Checks
+        self._check_logged_in()
+
+        # Check that entry_id is valid
+        try:
+            entry_id = int(entry_id)
+        except:
+            raise Exception("The entry ID must be an integer.")
+
+        # Check that file exists
+        file_path = Path(file_path)
+        if not file_path.is_file():
+            raise FileNotFoundError(f"{file_path} not found")
+
+        # Data to be posted
+        params = {"entry_id": entry_id, "file_name": file_path.name, "locked": locked}
+        content_type = MimeTypes()
+        content_type = content_type.guess_type(file_path)[0]
+        headers = self.me._headers.copy()
+        if content_type:
+            headers = headers | {"Content-Type": content_type}
+
+        # Send request
+        with open(file_path, "rb") as fhandle:
+            r = POST(
+                f"{self._api_base_url}/elements/file",
+                headers=headers,
+                params=params,
+                data=fhandle.read(),
+            )
+
+        # Evaluate response
+        if r.status_code == 201:
+            print(f"Succesfully uploaded {file_path.name} to entry {entry_id}.")
         else:
             raise LabFolderApiException(error=r.json())
