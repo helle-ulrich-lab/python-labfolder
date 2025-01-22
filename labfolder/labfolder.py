@@ -131,10 +131,10 @@ class Project(BaseRecord):
 
 
 class LabFolder(object):
-    def __init__(self):
+    def __init__(self, api_base_url: str = ""):
         self.me = None
         self.group = None
-        self._api_base_url = "https://labfolder.labforward.app/api/v2"
+        self._api_base_url = api_base_url or "https://labfolder.labforward.app/api/v2"
         self._api_num_limit = 20
 
     def _check_logged_in(self) -> bool:
